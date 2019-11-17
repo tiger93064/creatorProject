@@ -21,7 +21,7 @@ class editingPageViewController:UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         //imgView.image = img
-        view.backgroundColor = UIColor.darkGray
+        //view.backgroundColor = UIColor.darkGray
         
         imgView.image = img
         // Do any additional setup after loading the view.
@@ -266,6 +266,14 @@ class editingPageViewController:UIViewController {
         return image
     }
 
+    @IBAction func rightNavBtn(_ sender: Any) {
+        print("helllo")
+        if let previewP = self.storyboard?.instantiateViewController(identifier: "previewPage") as? previewPageViewController {
+            previewP.OKimg = croppedimg.image
+            self.navigationController?.pushViewController(previewP, animated: true) //go preview page
+        }
+        
+    }
 }
 
 
