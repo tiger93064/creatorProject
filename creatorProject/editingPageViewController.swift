@@ -24,7 +24,7 @@ class editingPageViewController:UIViewController, UIDocumentInteractionControlle
     override func viewDidLoad() {
         super.viewDidLoad()
         //imgView.image = img
-        //view.backgroundColor = UIColor.darkGray
+        view.backgroundColor = UIColor.lightGray
         shouldPrcoess = true
         imgView.image = img
         // Do any additional setup after loading the view.
@@ -42,12 +42,12 @@ class editingPageViewController:UIViewController, UIDocumentInteractionControlle
             let OKdata:Data? = OKimg?.pngData()
             
             //print(self.findEdgePoint(image: UIImage.init(contentsOfFile: filename!.path)!))
-            let cropinfo = self.findEdgePoint(image: UIImage.init(data: OKdata!)!)
+            let cropinfo = self.findEdgePoint(image: UIImage.init(data: OKdata!)!)                                              //ADT:[L-TopX, L-TopY ,R-BtmX, R-BtmY]
             print(cropinfo)
             //print(self.findEdgePoint(image: UIImage.init(named: "image.png")!))   tested OK
             OKimgView.image = OKimg
             
-            croppedimg.image = cropImage(image: OKimg!, toRect: CGRect(x: CGFloat(cropinfo[0])/2, y: CGFloat(cropinfo[1])/2
+            croppedimg.image = cropImage(image: OKimg!, toRect: CGRect(x: CGFloat(cropinfo[0])/2, y: CGFloat(cropinfo[1])/2     //divided by 2 to trans. into point-level
                 , width:CGFloat(cropinfo[2]-cropinfo[0])/2, height: CGFloat(cropinfo[3]-cropinfo[1])/2))
             
             shouldPrcoess = false
