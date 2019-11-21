@@ -63,15 +63,19 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fn9-2A-Rap">
-                                <rect key="frame" x="0.0" y="75" width="512" height="287"/>
+                                <rect key="frame" x="20" y="38" width="228" height="131"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qc6-0l-RSD">
-                                <rect key="frame" x="513" y="75" width="511" height="287"/>
+                            <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qc6-0l-RSD">
+                                <rect key="frame" x="256" y="39" width="228" height="130"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5bp-wQ-pxG" userLabel="Cropped View">
-                                <rect key="frame" x="0.0" y="361" width="512" height="251"/>
+                            <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5bp-wQ-pxG" userLabel="Cropped View" customClass="DraggableImage" customModule="creatorProject" customModuleProvider="target">
+                                <rect key="frame" x="492" y="39" width="233" height="130"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3sc-q7-vMF">
+                                <rect key="frame" x="347" y="222" width="594" height="420"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
@@ -88,7 +92,7 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="OKimgView" destination="Qc6-0l-RSD" id="sxv-DP-hN3"/>
+                        <outlet property="OKimgView" destination="Qc6-0l-RSD" id="EIh-EE-jAV"/>
                         <outlet property="croppedimg" destination="5bp-wQ-pxG" id="s5r-JT-jIo"/>
                         <outlet property="imgView" destination="Fn9-2A-Rap" id="TsK-Bl-SZS"/>
                     </connections>

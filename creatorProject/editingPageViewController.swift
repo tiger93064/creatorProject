@@ -8,39 +8,54 @@
 
 import UIKit
 
-class editingPageViewController:UIViewController {
+class editingPageViewController:UIViewController, UIDocumentInteractionControllerDelegate {
 
     @IBOutlet weak var croppedimg: UIImageView!
     @IBOutlet weak var OKimgView: UIImageView!
-    @IBOutlet weak var imgView: UIImageView!
+    @IBOutlet weak var imgView: DraggableImage!
     var img:UIImage?
     var OKimg:UIImage?
+    var shouldPrcoess:Bool?
     let startRange:CGFloat = 0.0, endRange:CGFloat = 0.0
-    var filename:URL?
+    
+    var savePath:URL?
+    let dICon = UIDocumentInteractionController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         //imgView.image = img
         //view.backgroundColor = UIColor.darkGray
-        
+        shouldPrcoess = true
         imgView.image = img
         // Do any additional setup after loading the view.
         navigationController?.setNavigationBarHidden(false, animated:true)
         //print(img!.ciImage)
-        OKimg = UIImage.init(ciImage: filterPixels(foregroundCIImage:CIImage(cgImage: img!.cgImage!)))
-                
-        let OKdata:Data? = OKimg?.pngData()
-        
-        //print(self.findEdgePoint(image: UIImage.init(contentsOfFile: filename!.path)!))
-        let cropinfo = self.findEdgePoint(image: UIImage.init(data: OKdata!)!)
-        print(cropinfo)
-        //print(self.findEdgePoint(image: UIImage.init(named: "image.png")!))   tested OK
-        OKimgView.image = OKimg
-        
-        croppedimg.image = cropImage(image: OKimg!, toRect: CGRect(x: CGFloat(cropinfo[0])/2, y: CGFloat(cropinfo[1])/2, width:      CGFloat(cropinfo[2]-cropinfo[0])/2, height: CGFloat(cropinfo[3]-cropinfo[1])/2))
-        
+              
+        dICon.delegate = self
 
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if shouldPrcoess!{
+            OKimg = UIImage.init(ciImage: filterPixels(foregroundCIImage:CIImage(cgImage: img!.cgImage!)))
+                    
+            let OKdata:Data? = OKimg?.pngData()
+            
+            //print(self.findEdgePoint(image: UIImage.init(contentsOfFile: filename!.path)!))
+            let cropinfo = self.findEdgePoint(image: UIImage.init(data: OKdata!)!)
+            print(cropinfo)
+            //print(self.findEdgePoint(image: UIImage.init(named: "image.png")!))   tested OK
+            OKimgView.image = OKimg
+            
+            croppedimg.image = cropImage(image: OKimg!, toRect: CGRect(x: CGFloat(cropinfo[0])/2, y: CGFloat(cropinfo[1])/2
+                , width:CGFloat(cropinfo[2]-cropinfo[0])/2, height: CGFloat(cropinfo[3]-cropinfo[1])/2))
+            
+            shouldPrcoess = false
+            
+            
+        }
+    }
+    
     @objc func someAction(_ sender:UITapGestureRecognizer){
         let point = sender.location(in: self.view)
        print(point)
@@ -268,15 +283,80 @@ class editingPageViewController:UIViewController {
 
     @IBAction func rightNavBtn(_ sender: Any) {
         print("helllo")
-        if let previewP = self.storyboard?.instantiateViewController(identifier: "previewPage") as? previewPageViewController {
-            previewP.OKimg = croppedimg.image
-            self.navigationController?.pushViewController(previewP, animated: true) //go preview page
-        }
+        
+        print(self.saveImage(image: OKimg!))
+        storeAndShare(withURL: savePath!)
         
     }
 }
 
 
+
+
+
+
+
+
+extension editingPageViewController{                            //move from deleted previewPage
+    func saveImage(image: UIImage) -> Bool {
+            guard let data = image.pngData() else {
+                return false
+            }
+            guard let directory = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) as NSURL else {
+                return false
+            }
+            do{
+                try data.write(to: directory.appendingPathComponent("OKimg.png")!)
+                savePath = directory.appendingPathComponent("OKimg.png")!
+                return true
+            }
+            catch{
+                print(error.localizedDescription)
+                return false
+            }
+        }
+        func getImage(named: String) -> UIImage? {
+            if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
+                return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
+            }
+            return nil
+        }
+        /*
+        // MARK: - Navigation
+
+        // In a storyboard-based application, you will often want to do a little preparation before navigation
+        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+            // Get the new view controller using segue.destination.
+            // Pass the selected object to the new view controller.
+        }
+        */
+        func share(url: URL) {
+            dICon.url = url
+            dICon.uti = url.typeIdentifier ?? "public.data, public.content"
+            dICon.name = url.localizedName ?? url.lastPathComponent
+            dICon.presentPreview(animated: true)
+        }
+        
+        /// This function will store your document to some temporary URL and then provide sharing, copying, printing, saving options to the user
+        func storeAndShare(withURL: URL) {
+        
+            DispatchQueue.main.async {
+                /// STOP YOUR ACTIVITY INDICATOR HERE
+                self.share(url: withURL)
+            }
+                
+        }
+        
+        func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
+            guard let navVC = self.navigationController else {
+                return self
+            }
+            return navVC
+        }
+        
+        
+    
+}
 
 extension UIImage {
     func getPixelColor(pos: CGPoint) -> UIColor {
@@ -293,4 +373,51 @@ extension UIImage {
 
         return UIColor(red: r, green: g, blue: b, alpha: a)
     }
+}
+
+extension URL {
+    var typeIdentifier: String? {
+        return (try? resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier
+    }
+    var localizedName: String? {
+        return (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName
+    }
+}
+
+class DraggableImage: UIImageView {
+
+    var localTouchPosition : CGPoint?
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.layer.borderWidth = 1
+        self.layer.borderColor = UIColor.red.cgColor
+        self.isUserInteractionEnabled = true
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let touch = touches.first
+        self.localTouchPosition = touch?.preciseLocation(in: self)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        let touch = touches.first
+        guard let location = touch?.location(in: self.superview), let localTouchPosition = self.localTouchPosition else{
+            return
+        }
+        self.frame.origin = CGPoint(x: location.x - localTouchPosition.x, y: location.y - localTouchPosition.y)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.localTouchPosition = nil
+    }
+    /*
+     // Only override drawRect: if you perform custom drawing.
+     // An empty implementation adversely affects performance during animation.
+     override func drawRect(rect: CGRect) {
+     // Drawing code
+     }
+     */
+
 }
