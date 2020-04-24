@@ -13,6 +13,7 @@ import WebKit
 class ViewController: UIViewController, WKNavigationDelegate,WKUIDelegate{
 
     @IBOutlet weak var transpLabel: UILabel!
+    @IBOutlet weak var transLabel1: UILabel!
     @IBOutlet weak var webV: WKWebView!
     
     override func viewDidLoad() {
@@ -20,7 +21,8 @@ class ViewController: UIViewController, WKNavigationDelegate,WKUIDelegate{
         // Do any additional setup after loading the view.
         navigationController?.setNavigationBarHidden(true, animated:true)                                          //hide navigationBar
         
-        transpLabel.backgroundColor = UIColor.init(red: 237/256, green: 237/256, blue: 238/256, alpha: 1)          //make a hidder for web's burgerBar with certain color.
+        transpLabel.backgroundColor = UIColor.init(red: 237/256, green: 237/256, blue: 238/256, alpha: 0)          //make a hidder for web's burgerBar with certain color.
+        transLabel1.backgroundColor = UIColor.init(red: 237/256, green: 237/256, blue: 238/256, alpha: 1) 
         
         webV.navigationDelegate = self                                                                             //initiate WKWebview
         webV.uiDelegate = self
@@ -45,7 +47,7 @@ class ViewController: UIViewController, WKNavigationDelegate,WKUIDelegate{
     //press done button
     @IBAction func btnDone(_ sender: Any) {
         let config = WKSnapshotConfiguration()                                              //take snapshot of wkwebview with a rect
-        config.rect = CGRect(x: 67.5, y: 82.0, width: 896.5, height: 621)
+        config.rect = CGRect(x: 67.5, y: 82.0, width: 845, height: 690)
         webV.takeSnapshot(with: config, completionHandler: {image, error in
             if let image = image {
                 print(image)
@@ -59,8 +61,9 @@ class ViewController: UIViewController, WKNavigationDelegate,WKUIDelegate{
             else {
                 print("Failed taking snapshot: \(error?.localizedDescription ?? "--")")
             }
-            
+
         })
+        
         
         
     }
